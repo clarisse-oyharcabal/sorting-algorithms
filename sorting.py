@@ -1,10 +1,10 @@
 class SortingAlgorithm:
-    def __init__(self, data):
-        self.data = data
-
+    def __init__(self, arr):
+        self.arr = arr
+    
     def quick_sort(self, array=None):
         if array is None:
-            array = self.data
+            array = self.arr
 
         if not array:
             return []
