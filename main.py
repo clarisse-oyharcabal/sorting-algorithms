@@ -1,65 +1,48 @@
+import threading
 import time
-from sorting import (
-    selection_sort,
-    bubble_sort,
-    insertion_sort,
-    merge_sort,
-    quick_sort,
-    heap_sort,
-    comb_sort
-)
+from sorting import SortingAlgorithms
 
-def print_menu():
-    print("\n=== Les Papyrus de Héron – Outil de Tri ===")
-    print("1. Tri par sélection")
-    print("2. Tri à bulles")
-    print("3. Tri par insertion")
-    print("4. Tri fusion")
-    print("5. Tri rapide")
-    print("6. Tri par tas")
-    print("7. Tri à peigne")
-    print("0. Quitter")
+class SortingAppLauncher:
+    def __init__(self):
+        self.algos = SortingAlgorithms()
 
-def get_algorithm(choice):
-    algos = {
-        "1": selection_sort,
-        "2": bubble_sort,
-        "3": insertion_sort,
-        "4": merge_sort,
-        "5": quick_sort,
-        "6": heap_sort,
-        "7": comb_sort
-    }
-    return algos.get(choice, None)
+        self.algo_methods = {
+            "Tri par sélection": self.algos.selection_sort,
+            "Tri à bulles": self.algos.bubble_sort,
+            "Tri par insertion": self.algos.insertion_sort,
+            "Tri fusion": self.algos.merge_sort,
+            "Tri rapide": self.algos.quick_sort,
+            "Tri par tas": self.algos.heap_sort,
+            "Tri à peigne": self.algos.comb_sort
+        }
 
-def main():
-    while True:
-        print_menu()
-        choice = input("Choisissez un algorithme (1-7) ou 0 pour quitter : ")
+    def run_interface(self):
+        from graphical import main as graphical_main
+        graphical_main()
 
-        if choice == "0":
-            print("À bientôt, jeune érudit ! 📜")
-            break
+    def run_benchmarks(self):
+        import random
+        from copy import deepcopy
 
-        algo = get_algorithm(choice)
-        if algo is None:
-            print("⛔ Choix invalide. Veuillez réessayer.")
-            continue
+        data = [random.uniform(0, 100) for _ in range(30)]
+        print("📜 Liste initiale :", [round(x, 2) for x in data])
+        print("🔬 Résultats :")
 
-        try:
-            user_input = input("Entrez une liste de nombres réels séparés par des espaces : ")
-            numbers = [float(x) for x in user_input.strip().split()]
-        except ValueError:
-            print("⛔ Entrée invalide. Veuillez entrer uniquement des nombres.")
-            continue
+        for name, func in self.algo_methods.items():
+            to_sort = deepcopy(data)
+            start = time.time()
+            sorted_list = func(to_sort)
+            end = time.time()
+            print(f"✅ {name} → {round(end - start, 5)} s → {sorted_list}")
 
-        start_time = time.time()
-        sorted_list = algo(numbers)
-        end_time = time.time()
-        duration = end_time - start_time
+    def start(self):
+        interface_thread = threading.Thread(target=self.run_interface)
+        interface_thread.start()
 
-        print(f"\n✅ Liste triée : {sorted_list}")
-        print(f"⏱️ Temps d'exécution : {duration:.6f} secondes")
+        self.run_benchmarks()
+
+        interface_thread.join()
 
 if __name__ == "__main__":
-    main()
+    launcher = SortingAppLauncher()
+    launcher.start()

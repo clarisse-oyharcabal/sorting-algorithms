@@ -33,14 +33,14 @@ class MergeSortVisualizer(VisualSort):
 
         while i < len(left_part):
             self.data[k] = left_part[i]
-            i += 1
             self.draw_list({k: "swap"})
             yield
+            i += 1
             k += 1
 
         while j < len(right_part):
             self.data[k] = right_part[j]
-            j += 1
             self.draw_list({k: "swap"})
             yield
+            j += 1
             k += 1
